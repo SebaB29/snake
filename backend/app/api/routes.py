@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Body, HTTPException, status
+from fastapi import APIRouter, Body, HTTPException, Response, status
 
 from app.api.deps import session_manager
 from app.schemas.game import GameStartRequest, GameState, InputRequest, RestartRequest
@@ -75,5 +75,6 @@ def restart(session_id: str, request: RestartRequest) -> GameState:
 
 
 @router.delete("/games/{session_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_game(session_id: str) -> None:
+def delete_game(session_id: str) -> Response:
     session_manager.delete(session_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
