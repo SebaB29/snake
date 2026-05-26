@@ -21,6 +21,52 @@ export default function App() {
     const socketRef = useRef(null);
 
     useEffect(() => {
+        if (screen !== SCREENS.PLAYING) {
+            return undefined;
+        }
+
+        const handleKeyDown = (event) => {
+            if (event.repeat) {
+                return;
+            }
+
+            const target = event.target;
+            const tagName = target?.tagName?.toLowerCase();
+            if (tagName === "input" || tagName === "select" || tagName === "textarea") {
+                return;
+            }
+
+            const key = event.key;
+            const normalizedKey = key.length === 1 ? key.toLowerCase() : key;
+            const directions = {
+                ArrowUp: "UP",
+                ArrowDown: "DOWN",
+                ArrowLeft: "LEFT",
+                ArrowRight: "RIGHT",
+                w: "UP",
+                a: "LEFT",
+                s: "DOWN",
+                d: "RIGHT"
+            };
+
+            if (normalizedKey === "p") {
+                if (sendSocketMessage({ type: "pause" })) {
+                    event.preventDefault();
+                }
+                return;
+            }
+
+            const direction = directions[normalizedKey];
+            if (direction && sendSocketMessage({ type: "input", direction })) {
+                event.preventDefault();
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [screen]);
+
+    useEffect(() => {
         if (!sessionId) {
             return undefined;
         }

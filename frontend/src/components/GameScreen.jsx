@@ -1,9 +1,15 @@
-function formatStatus(status) {
-    if (!status) {
+import Board from "./Board.jsx";
+
+function formatStatus(state) {
+    if (!state) {
         return "loading";
     }
 
-    return status;
+    if (state.paused) {
+        return "paused";
+    }
+
+    return state.status;
 }
 
 export default function GameScreen({
@@ -15,6 +21,14 @@ export default function GameScreen({
     onExit,
     error
 }) {
+    const overlayMessage = state?.paused
+        ? "Paused"
+        : connectionStatus !== "open"
+            ? "Connecting..."
+            : state
+                ? null
+                : "Waiting for game state...";
+
     return (
         <section className="panel game-screen">
             <div className="header-row">
@@ -22,7 +36,7 @@ export default function GameScreen({
                     <p className="eyebrow">Live session</p>
                     <h1>Snake Web</h1>
                     <p className="sub">
-                        Rendering lands in Hito 4. State already streams live.
+                        Use WASD or arrow keys to move. Press P to pause.
                     </p>
                 </div>
                 <div className="status-stack">
@@ -37,15 +51,22 @@ export default function GameScreen({
 
             <div className="content-grid">
                 <div className="board">
-                    <div className="board-grid"></div>
-                    <div className="board-message">Board render in Hito 4.</div>
+                    <Board
+                        board={state?.board}
+                        snake={state?.snake}
+                        fruit={state?.fruit}
+                        obstacles={state?.obstacles}
+                    />
+                    {overlayMessage ? (
+                        <div className="board-overlay">{overlayMessage}</div>
+                    ) : null}
                 </div>
 
                 <div className="side-panel">
                     <div className="stats">
                         <div className="stat">
                             <span className="label">Status</span>
-                            <span className="value">{formatStatus(state?.status)}</span>
+                            <span className="value">{formatStatus(state)}</span>
                         </div>
                         <div className="stat">
                             <span className="label">Level</span>
@@ -54,6 +75,10 @@ export default function GameScreen({
                         <div className="stat">
                             <span className="label">Fruits left</span>
                             <span className="value">{state?.remaining_fruits ?? "-"}</span>
+                        </div>
+                        <div className="stat">
+                            <span className="label">Paused</span>
+                            <span className="value">{state?.paused ? "Yes" : "No"}</span>
                         </div>
                     </div>
 
@@ -70,7 +95,7 @@ export default function GameScreen({
                     </div>
 
                     {error ? <p className="error">{error}</p> : null}
-                    <p className="hint">Input mapping arrives in Hito 4.</p>
+                    <p className="hint">Arrow keys and WASD are supported.</p>
                 </div>
             </div>
         </section>

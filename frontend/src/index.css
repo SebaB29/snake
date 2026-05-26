@@ -209,13 +209,40 @@ select {
 .board-grid {
     position: absolute;
     inset: 0;
-    background-image:
-        linear-gradient(transparent 95%, rgba(164, 160, 150, 0.25) 95%),
-        linear-gradient(90deg, transparent 95%, rgba(164, 160, 150, 0.25) 95%);
-    background-size: 8% 8%;
+    display: grid;
+    grid-template-columns: repeat(var(--cols), 1fr);
+    grid-template-rows: repeat(var(--rows), 1fr);
+    gap: 2px;
+    padding: 0.75rem;
 }
 
-.board-message {
+.cell {
+    border-radius: 6px;
+    border: 1px solid rgba(186, 179, 166, 0.45);
+    background: rgba(255, 255, 255, 0.65);
+}
+
+.cell.snake {
+    background: #1c6b3f;
+    border-color: #155432;
+}
+
+.cell.head {
+    background: #0f4a2c;
+    border-color: #0a381f;
+}
+
+.cell.fruit {
+    background: #d6452f;
+    border-color: #b13a2a;
+}
+
+.cell.obstacle {
+    background: #c4a11e;
+    border-color: #9b7d17;
+}
+
+.board-overlay {
     position: absolute;
     inset: 0;
     display: flex;
