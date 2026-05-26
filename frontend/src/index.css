@@ -1,0 +1,22 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&display=swap");
+
+:root {
+    color-scheme: light;
+    font-family: "Space Grotesk", "Segoe UI", sans-serif;
+    line-height: 1.5;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(circle at 20% 20%, #f3f0e8, #e6e2d9);
+    color: #1c1c1c;
+}
+
+.app {
+    padding: 3rem;
+}
