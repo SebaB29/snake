@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
@@ -8,19 +9,34 @@ from app.api.deps import session_manager
 from app.services.session_manager import SessionNotFound
 
 ws_router = APIRouter()
+logger = logging.getLogger("snake.websocket")
+ALLOWED_DIRECTIONS = {"UP", "DOWN", "LEFT", "RIGHT"}
 
 
 async def _receiver_loop(websocket: WebSocket, session) -> None:
     while True:
-        data = await websocket.receive_json()
+        try:
+            data = await websocket.receive_json()
+        except WebSocketDisconnect:
+            break
+        except Exception as exc:
+            logger.warning("Invalid websocket payload: %s", exc)
+            continue
+
         message_type = data.get("type")
 
         if message_type == "input":
-            session.apply_input(data.get("direction"))
+            direction = data.get("direction")
+            if direction in ALLOWED_DIRECTIONS:
+                session.apply_input(direction)
         elif message_type == "pause":
             session.toggle_pause()
         elif message_type == "restart":
-            session.reset(level=data.get("level"))
+            level = data.get("level")
+            if isinstance(level, int) and level > 0:
+                session.reset(level=level)
+            else:
+                session.reset()
 
 
 async def _sender_loop(websocket: WebSocket, session) -> None:

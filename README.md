@@ -1,88 +1,88 @@
-# 🐍 Snake Game
+# Snake Web (Fullstack)
 
-Welcome to **Snake**, a classic arcade game implementation in Python. Navigate the snake, eat fruits to grow, and avoid obstacles in this project built with Object-Oriented Programming (OOP) principles.
+Modernized Snake game with a FastAPI backend and a React frontend, designed for containerized local development and Render deployment. The backend preserves the original OOP game logic and still reads obstacle data from `resources/obstacles.txt`.
 
-# 📸 Demo
+## Demo
 <div style="display: flex; gap: 10px;">
     <img alt="Snake Gameplay" src="img/snake.png" width="350px">
     <img alt="Game Over Screen" src="img/gameover.png" width="350px">
 </div>
 
-# 📍 Table of Contents
-- [📝 Description](#-description)
-  - [🧩 Key Features](#-key-features)
-  - [🧱 Project Structure](#-project-structure)
-  - [🛠️ Technologies](#️-technologies)
-- [🚀 Getting Started](#-getting-started)
-  - [📋 Prerequisites](#-prerequisites)
-  - [⚙️ Installation](#️-installation)
-- [💡 Usage](#-usage)
-- [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
-
-# 📝 Description
-This project was developed as a university assignment to demonstrate the use of classes, inheritance, and modular logic in Python. It uses a custom library for graphical rendering and event handling.
-
-## 🧩 Key Features
-- **Levels & Difficulty:** Multiple levels with increasing speed and strategic obstacles.
-- **Classic Mechanics:** Growing tail system and random fruit spawning.
-- **Collision Logic:** Advanced detection for walls, obstacles, and self-collision.
-- **Pause System:** Ability to pause the game at any moment.
-
-## 🧱 Project Structure
+## Project Structure
 ```text
 Snake/
-├── graphics/    # Rendering libraries (gamelib & custom)
-├── img/         # Demo screenshots
-├── resources/   # Configuration files (obstacles.txt)
-├── src/         # Core game logic (OOP classes)
-│   ├── snake.py
-│   ├── fruit.py
-│   └── game.py
-└── main.py      # Entry point
+├── backend/             # FastAPI app (domain + API + services)
+├── frontend/            # React SPA (Vite)
+├── resources/           # Game resources (obstacles.txt)
+├── docker-compose.yml   # Dev compose (hot reload)
+├── docker-compose.prod.yml
+├── graphics/            # Legacy rendering library (desktop version)
+├── src/                 # Legacy OOP logic (desktop version)
+└── main.py              # Legacy entry point
 ```
 
-## 🛠️ Technologies
-* **Python 3.x**
-* **Gamelib**: A lightweight thread-based rendering library for Python interfaces.
+## Tech Stack
+- **Backend:** FastAPI (Python 3.10+)
+- **Frontend:** React (Vite)
+- **Realtime:** WebSocket stream + REST endpoints
+- **Infra:** Docker + Docker Compose
 
-# 🚀 Getting Started
-## 📋 Prerequisites
-* Python 3.10 or higher installed on your system.
+## Local Development (Docker)
+```bash
+docker compose up --build
+```
 
-## ⚙️ Installation
-1. Clone the repository:
-   ```bash
-   git clone git@github.com:SebaB29/snake.git
-   cd snake
-   ```
-2. (Optional) Create a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+Open `http://localhost:5173` and start a session.
 
-# 💡 Usage
-To start the game, simply run the main script:
+### Controls
+| Key         | Action         |
+|-------------|----------------|
+| Arrow Keys  | Move           |
+| WASD        | Move           |
+| P           | Pause / Resume |
+
+## Backend API (summary)
+- `POST /api/games` create a session
+- `GET /api/games/{session_id}` fetch current state
+- `POST /api/games/{session_id}/input` send direction (REST fallback)
+- `POST /api/games/{session_id}/pause` toggle pause
+- `POST /api/games/{session_id}/restart` restart session
+- `DELETE /api/games/{session_id}` end session
+- `WS /ws/games/{session_id}` realtime stream and inputs
+
+## Tests
+```bash
+cd backend
+pytest -q
+```
+
+## Production Docker (local)
+```bash
+docker compose -f docker-compose.prod.yml up --build
+```
+
+Frontend is served on `http://localhost:5173` (via nginx), backend on `http://localhost:8000`.
+
+## Deploy to Render
+
+### Backend (Web Service)
+- **Build context:** repository root
+- **Dockerfile:** `backend/Dockerfile.prod`
+- **Env:**
+  - `CORS_ORIGINS=https://YOUR-FRONTEND.onrender.com`
+  - `GAME_FPS=8`
+
+### Frontend (Static Site)
+- **Build command:** `cd frontend && npm install && npm run build`
+- **Publish directory:** `frontend/dist`
+- **Env:**
+  - `VITE_API_URL=https://YOUR-BACKEND.onrender.com`
+
+## Legacy Desktop Version
+The original desktop version (gamelib/tkinter) is still available and can be run with:
 ```bash
 python main.py
 ```
 
-## 🎮 Controls
-| Key         | Action         |
-|-------------|----------------|
-| Arrow Up    | Move Up        |
-| Arrow Down  | Move Down      |
-| Arrow Left  | Move Left      |
-| Arrow Right | Move Right     |
-| P           | Pause / Resume |
-
-# 🤝 Contributing
-1. Fork the project.
-2. Create your Feature Branch (git checkout -b feature/AmazingFeature).
-3. Commit your changes (git commit -m 'Add some AmazingFeature').
-4. Push to the Branch (git push origin feature/AmazingFeature).
-5. Open a Pull Request.
-
-# 📄 License
-This project is licensed under the MIT License - see the LICENSE file for details.
+## License
+MIT License. See `LICENSE` for details.
